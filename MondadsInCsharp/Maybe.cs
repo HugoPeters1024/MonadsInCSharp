@@ -69,7 +69,7 @@ namespace MondadsInCsharp
             }
         }
 
-        public static Maybe<T> pure<T>(this T value)
+        public static Maybe<T> pureMaybe<T>(this T value)
         {
             return new Just<T>(value);
         }

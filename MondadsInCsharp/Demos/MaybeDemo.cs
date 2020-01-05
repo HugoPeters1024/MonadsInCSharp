@@ -28,7 +28,7 @@ namespace MondadsInCsharp.Demos
     {
         public static Maybe<int> DestroyIfEven(Maybe<int> input)
         {
-            return input.bind(x => x % 2 == 0 ? new Nothing<int>() : x.pure());
+            return input.bind(x => x % 2 == 0 ? new Nothing<int>() : x.pureMaybe());
         }
     }
 
