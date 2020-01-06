@@ -39,19 +39,6 @@ namespace MondadsInCsharp
             }
         }
 
-        public static SList<(T1, T2)> zip<T1, T2>(this SList<T1> one, SList<T2> two)
-        {
-            switch ((one, two))
-            {
-                case (Empty<T1> _, _): return new Empty<(T1, T2)>(); 
-                case (_, Empty<T2> _): return new Empty<(T1, T2)>();
-                default:
-                    var left = one as Cons<T1>;
-                    var right = two as Cons<T2>;
-                    return new Cons<(T1, T2)>((left.Head, right.Head), left.Tail.zip<T1, T2>(right.Tail));
-            }
-        }
-
         public static SList<TOut> fmap<TIn, TOut>(this SList<TIn> list, Func<TIn, TOut> func)
         {
             switch (list)
@@ -65,8 +52,18 @@ namespace MondadsInCsharp
         public static SList<TOut> fmap<TIn, TOut>(this Func<TIn, TOut> func, SList<TIn> list)
             => list.fmap(func);
 
-        public static SList<TOut> ab<TIn, TOut>(this SList<Func<TIn, TOut>> list, SList<TIn> arg) 
-            => list.zip(arg).fmap(t => t.Item1(t.Item2));
+        public static SList<TOut> ab<TIn, TOut>(this SList<Func<TIn, TOut>> list, SList<TIn> arg)
+        {
+            switch ((list, arg))
+            {
+                case (Empty<Func<TIn, TOut>> _, _): return new Empty<TOut>(); 
+                case (_, Empty<TIn> _): return new Empty<TOut>();
+                default:
+                    var funcs = list as Cons<Func<TIn, TOut>>;
+                    var args = arg as Cons<TIn>;
+                    return new Cons<TOut>(funcs.Head(args.Head), funcs.Tail.ab(args.Tail));
+            }
+        }
 
         public static SList<TOut> bind<TIn, TOut>(this SList<TIn> list, Func<TIn, SList<TOut>> func)
         {

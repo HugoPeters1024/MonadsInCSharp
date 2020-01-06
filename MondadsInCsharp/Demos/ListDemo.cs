@@ -47,11 +47,14 @@ namespace MondadsInCsharp.Demos
                     return new Cons<TOut>(mapping(x), new Empty<TOut>()) as SList<TOut>;
                 return new Empty<TOut>();
             });
+        
+        public static SList<(T1, T2)> zip<T1, T2>(SList<T1> one, SList<T2> two)
+        {
+            Func<T1, Func<T2, (T1, T2)>> mkTuple = x => y => (x, y);
+            return mkTuple.fmap(one).ab(two);
+        }
 
         public static SList<int> sumLists(SList<int> one, SList<int> two)
-        {
-            Func<int, Func<int, int>> sumFunc = a => b => a + b;
-            return sumFunc.fmap(one).ab(two);
-        }
+            => zip(one, two).fmap(t => t.Item1 + t.Item2);
     }
 }
